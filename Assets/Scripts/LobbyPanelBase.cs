@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class LobbyPanelBase : MonoBehaviour
@@ -23,6 +22,7 @@ public class LobbyPanelBase : MonoBehaviour
 
     public void ShowPanel()
     {
+        this.gameObject.SetActive(true);
         const string POP_IN_CLIP_NAME = "In";
         CallAnimationCoroutine(POP_IN_CLIP_NAME, true);
     }
@@ -35,31 +35,6 @@ public class LobbyPanelBase : MonoBehaviour
 
     private void CallAnimationCoroutine(string clipName, bool state)
     {
-        // Diverted internally to bypass the missing static Utils definition
-        StartCoroutine(PlayAnimAndSetStateWhenFinished(gameObject, panelAnimator, clipName, state));
-    }
-
-    private IEnumerator PlayAnimAndSetStateWhenFinished(GameObject target, Animator animator, string clipName, bool finalActiveState)
-    {
-        if (finalActiveState)
-        {
-            target.SetActive(true);
-        }
-
-        if (animator != null && animator.isActiveAndEnabled)
-        {
-            animator.Play(clipName);
-
-            // Wait for Animator to evaluate the state change
-            yield return null;
-
-            // Wait out the dynamic length of the "In" or "Out" clip execution
-            yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        }
-
-        if (!finalActiveState)
-        {
-            target.SetActive(false);
-        }
+        StartCoroutine(Utils.PlayAnimAndSetStateWhenFinished(gameObject, panelAnimator, clipName, state));
     }
 }

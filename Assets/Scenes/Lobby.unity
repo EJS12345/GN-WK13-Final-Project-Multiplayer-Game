@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!95 &23990338 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1223984959125915800, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
+  m_PrefabInstance: {fileID: 485048213}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &149777155
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ec7e02657ec00649a691c336ca01dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CreateNickNamePanel
-  <PanelType>k__BackingField: 0
+  <PanelType>k__BackingField: 1
   panelAnimator: {fileID: 1343362958}
   inputField: {fileID: 2000731211}
   createNicknameBtn: {fileID: 1757243604}
@@ -886,7 +891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1223984958811788621, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1223984958811788658, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1049,6 +1054,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1223984958112238646, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 383549680}
+    - targetCorrespondingSourceObject: {fileID: 1223984958811788621, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1255282939}
   m_SourcePrefab: {fileID: 100100000, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
 --- !u!224 &485048214 stripped
 RectTransform:
@@ -1362,6 +1370,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 862190132}
   m_CullTransparentMesh: 1
+--- !u!1 &1023684287
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1023684288}
+  - component: {fileID: 1023684289}
+  m_Layer: 0
+  m_Name: LobbyUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1023684288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023684287}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 323.40247, y: 178.76483, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1023684289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023684287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d35cbf764593b844bdd74222bb72ffb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LobbyUIManager
+  lobbyPanels:
+  - {fileID: 383549680}
+  - {fileID: 1255282939}
+--- !u!1 &1255282937 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1223984958811788621, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
+  m_PrefabInstance: {fileID: 485048213}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1255282939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255282937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216baaab430aa7042b10ebdb2f883277, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MiddleSectionPanel
+  <PanelType>k__BackingField: 2
+  panelAnimator: {fileID: 23990338}
 --- !u!95 &1343362958 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 1223984958325722273, guid: 1712a0b6f441d424eb86b6e332a88f4d, type: 3}
@@ -1751,4 +1825,5 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 485507727}
   - {fileID: 485048213}
+  - {fileID: 1023684288}
   - {fileID: 1969473415}
