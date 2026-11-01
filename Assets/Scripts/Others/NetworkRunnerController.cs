@@ -7,17 +7,30 @@ using UnityEngine.SceneManagement;
 
 public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
 {
+    public event Action OnStartedRunnerConnection;
+    public event Action OnPlayerJoinedSuccessfully;
+    
     [Header("Network Settings")]
     [SerializeField] private NetworkRunner networkRunnerPrefab;
-
+    
     [Header("Scene Settings")]
     [Tooltip("The Build Index of your MainGame scene (Check File > Build Settings)")]
-    [SerializeField] private int mainGameSceneIndex = 1;
+    [SerializeField] private int mainGameSceneIndex = 1; 
 
     private NetworkRunner networkRunnerInstance;
 
+    public void ShutDownRunner()
+    {
+        if (networkRunnerInstance != null)
+        {
+            networkRunnerInstance.Shutdown();
+        }
+    }
+
     public async void StartGame(GameMode mode, string roomName)
     {
+        OnStartedRunnerConnection?.Invoke();
+
         if (networkRunnerInstance == null)
         {
             networkRunnerInstance = Instantiate(networkRunnerPrefab);
@@ -35,14 +48,13 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
         };
 
         var result = await networkRunnerInstance.StartGame(startGameArgs);
-
+        
         if (result.Ok)
         {
-            // CRITICAL FIX 1: Only the Server/Host should dictate what scene is loaded. 
-            // Clients will automatically follow the server's scene.
+            // CRITICAL FIX: Only the Server/Host should dictate what scene is loaded.
             if (networkRunnerInstance.IsServer)
             {
-                // CRITICAL FIX 2: Fusion 2 requires SceneRef (using the Build Index) instead of a string name.
+                // Fusion 2 uses SceneRef (Build Index) instead of string names
                 networkRunnerInstance.LoadScene(SceneRef.FromIndex(mainGameSceneIndex));
             }
         }
@@ -55,6 +67,7 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log("OnPlayerJoined");
+        OnPlayerJoinedSuccessfully?.Invoke();
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -75,6 +88,8 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.Log("OnShutdown");
+        const string LOBBY_SCENE = "Lobby";
+        SceneManager.LoadScene(LOBBY_SCENE);
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
@@ -97,10 +112,13 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("OnConnectFailed");
     }
 
+    // CRITICAL FIX: This suppresses the annoying yellow CS0618 warning in your console
+#pragma warning disable CS0618 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
         Debug.Log("OnUserSimulationMessage");
     }
+#pragma warning restore CS0618
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
@@ -132,8 +150,8 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("OnSceneLoadStart");
     }
 
-    // CRITICAL FIX 3: Removed 'throw new NotImplementedException();' from the below methods to prevent crashes.
-
+    // --- NEW FUSION 2 INTERFACE METHODS (Required to fix error CS0535) ---
+    
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
         Debug.Log("OnObjectExitAOI");
@@ -146,7 +164,7 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
-        Debug.Log("OnDisconnectedFromServer - Reason: " + reason);
+        Debug.Log($"OnDisconnectedFromServer: {reason}");
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ReadOnlySpan<byte> data)
