@@ -9,13 +9,13 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
 {
     public event Action OnStartedRunnerConnection;
     public event Action OnPlayerJoinedSuccessfully;
-    
+
     [Header("Network Settings")]
     [SerializeField] private NetworkRunner networkRunnerPrefab;
-    
+
     [Header("Scene Settings")]
     [Tooltip("The Build Index of your MainGame scene (Check File > Build Settings)")]
-    [SerializeField] private int mainGameSceneIndex = 1; 
+    [SerializeField] private int mainGameSceneIndex = 1;
 
     private NetworkRunner networkRunnerInstance;
 
@@ -36,25 +36,31 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
             networkRunnerInstance = Instantiate(networkRunnerPrefab);
         }
 
-        // Register so we will get the callbacks as well
         networkRunnerInstance.AddCallbacks(this);
+
+        // FIXED: Dynamically check and add a fallback scene manager component to prevent StartGameArgs from passing a null SceneManager.
+        var sceneManager = networkRunnerInstance.GetComponent<INetworkSceneManager>();
+        if (sceneManager == null)
+        {
+            sceneManager = networkRunnerInstance.gameObject.AddComponent<NetworkSceneManagerDefault>();
+        }
 
         var startGameArgs = new StartGameArgs()
         {
             GameMode = mode,
             SessionName = roomName,
             PlayerCount = 4,
-            SceneManager = networkRunnerInstance.GetComponent<INetworkSceneManager>()
+            SceneManager = sceneManager
         };
 
         var result = await networkRunnerInstance.StartGame(startGameArgs);
-        
+
         if (result.Ok)
         {
-            // CRITICAL FIX: Only the Server/Host should dictate what scene is loaded.
+            // CRITICAL FIX: Only the Server/Host instructs the network to load the scene.
+            // Clients will automatically detect this and follow the host into the MainGame.
             if (networkRunnerInstance.IsServer)
             {
-                // Fusion 2 uses SceneRef (Build Index) instead of string names
                 networkRunnerInstance.LoadScene(SceneRef.FromIndex(mainGameSceneIndex));
             }
         }
@@ -77,7 +83,7 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        Debug.Log("OnInput");
+        // Suppressed to avoid spam during normal movement
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -112,7 +118,6 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("OnConnectFailed");
     }
 
-    // CRITICAL FIX: This suppresses the annoying yellow CS0618 warning in your console
 #pragma warning disable CS0618 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
@@ -150,8 +155,6 @@ public class NetworkRunnerController : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("OnSceneLoadStart");
     }
 
-    // --- NEW FUSION 2 INTERFACE METHODS (Required to fix error CS0535) ---
-    
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
         Debug.Log("OnObjectExitAOI");
